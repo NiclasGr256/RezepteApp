@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#245b43">
+  <title>Mein Rezeptbuch</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="portions.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="hero">
+    <div class="brand">MEINE KÜCHE · MEINE LIEBLINGSREZEPTE</div>
+    <h1>Mein Rezeptbuch<span>.</span></h1>
+    <p>Gute Ideen sammeln. Lieblingsgerichte wiederfinden.</p>
+  </header>
+  <main>
+    <section class="panel" aria-labelledby="form-title">
+      <p class="eyebrow">ETWAS GUTES FESTHALTEN</p>
+      <h2 id="form-title">Neues Rezept</h2>
+      <form id="recipe-form">
+        <label for="title">Name des Rezepts</label>
+        <input id="title" name="title" placeholder="Zum Beispiel: Omas Apfelkuchen" required maxlength="150">
+        <label for="servings">Ursprüngliche Portionen</label>
+        <input id="servings" name="servings" type="number" min="1" max="1000" step="1" value="2" required aria-describedby="servings-hint">
+        <p id="servings-hint" class="storage-note">Für wie viele Portionen gelten die folgenden Zutatenmengen?</p>
+        <label for="ingredients">Zutaten <span>eine pro Zeile, Menge zuerst</span></label>
+        <textarea id="ingredients" name="ingredients" rows="6" placeholder="200 g Mehl&#10;2 Eier&#10;100 ml Milch" required maxlength="10000"></textarea>
+        <p class="storage-note">Zum Beispiel: 200 g Mehl, 1,5 EL Öl oder ½ TL Salz. Jede Zutat kommt in eine eigene Zeile.</p>
+        <label for="instructions">Zubereitung</label>
+        <textarea id="instructions" name="instructions" rows="6" placeholder="So wird dein Lieblingsgericht gemacht …" required maxlength="20000"></textarea>
+        <fieldset class="labels-fieldset">
+          <legend>Labels <span>optional, mehrere möglich</span></legend>
+          <div id="recipe-labels"></div>
+        </fieldset>
+        <label for="photo">Rezeptfoto <span>optional</span></label>
+        <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="photo-hint">
+        <p id="photo-hint" class="storage-note">JPG, PNG oder WebP, maximal 15 MB. Große Fotos werden automatisch verkleinert. Am Handy kannst du je nach Browser auch ein Foto aufnehmen.</p>
+        <img id="photo-preview" class="recipe-photo" alt="Vorschau deines Rezeptfotos" hidden>
+        <button id="remove-photo" class="secondary" type="button" hidden>Foto entfernen</button>
+        <p id="form-status" role="status" aria-live="polite"></p>
+        <button id="save-recipe" type="submit">+ Rezept speichern</button>
+        <button id="cancel-edit" class="secondary" type="button" hidden>Bearbeiten abbrechen</button>
+      </form>
+      <p class="storage-note">Deine Rezepte bleiben in diesem Browser gespeichert. Auf anderen Geräten sind sie noch nicht verfügbar. Beim Löschen der Browserdaten gehen sie verloren.</p>
+    </section>
+    <section class="collection" aria-labelledby="collection-title">
+      <div class="collection-heading"><div><p class="eyebrow">GESAMMELT MIT LIEBE</p><h2 id="collection-title">Deine Rezepte</h2></div><span id="count" class="badge">0 Rezepte</span></div>
+      <label class="search-label" for="search">Rezept suchen</label>
+      <input type="search" id="search" placeholder="Nach einem Rezeptnamen suchen …">
+      <fieldset class="labels-fieldset filter-panel" aria-describedby="filter-hint">
+        <legend>Nach Labels filtern</legend>
+        <p id="filter-hint" class="storage-note">Es müssen alle ausgewählten Labels passen. Die Namenssuche gilt zusätzlich.</p>
+        <div id="label-filters"></div>
+        <button id="reset-filters" class="secondary" type="button" hidden>Suche und Filter zurücksetzen</button>
+      </fieldset>
+      <p id="filter-results" class="storage-note" role="status" aria-live="polite"></p>
+      <p id="status" role="status" aria-live="polite"></p>
+      <div id="recipes"></div>
+    </section>
+  </main>
+  <footer>Dein persönliches Rezeptbuch · Platz für alles, was dir schmeckt.</footer>
+</body>
+</html>

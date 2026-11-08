@@ -1,0 +1,67 @@
+:root { font-family: "Segoe UI", sans-serif; color: #25372d; background: #f7f5ee; font-synthesis: none; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+.recipe-photo { display: block; width: 100%; max-height: 320px; object-fit: contain; background: #f0f2e8; border-radius: 8px; margin-top: 18px; }
+.recipe-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+.recipe-actions button { width: auto; flex: 1; }
+button.secondary { background: #e7ecdf; color: #245b43; }
+button.secondary:hover { background: #d8e2ce; }
+button.danger { background: #f8e9e4; color: #923e2d; }
+button.danger:hover { background: #efd5cb; }
+button:disabled { opacity: 0.6; cursor: wait; }
+#form-status { font-size: 14px; line-height: 1.6; }
+.labels-fieldset { border: 0; padding: 0; margin: 24px 0 0; min-width: 0; }
+.labels-fieldset > legend { font-size: 14px; font-weight: 600; }
+.labels-fieldset > legend span { display: block; font-size: 12px; font-weight: 400; color: #747d72; margin-top: 5px; }
+.label-group { border: 0; padding: 0; margin: 14px 0 0; min-width: 0; }
+.label-group legend { font-size: 12px; color: #65765e; margin-bottom: 7px; }
+.label-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+.label-choice { display: inline-flex; align-items: center; gap: 7px; margin: 0; padding: 8px 10px; border: 1px solid #d5dacd; border-radius: 12px; background: #fffefa; cursor: pointer; }
+.label-choice input { width: 16px; height: 16px; padding: 0; margin: 0; accent-color: #245b43; flex-shrink: 0; }
+.label-choice span { font-size: 12px; color: #25372d; font-weight: 400; }
+.label-choice:has(input:checked) { background: #e0ecd9; border-color: #628364; }
+.filter-panel { border: 1px solid #e0e3d7; border-radius: 12px; padding: 16px; }
+.filter-panel > legend { padding: 0 6px; }
+.filter-panel .storage-note { margin-top: 0; }
+.recipe-label-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.recipe-label-badge { background: #e7ecdf; color: #426a45; padding: 5px 9px; border-radius: 20px; font: 12px "Segoe UI", sans-serif; }
+.portions-control { margin-top: 20px; padding: 0 16px 16px; background: #f0f2e8; border-radius: 10px; display: flow-root; }
+.portions-control input { max-width: 140px; }
+.portions-control input[aria-invalid="true"] { border-color: #923e2d; }
+.portions-control input:disabled { background: #e7e9e0; }
+body { margin: 0; }
+.hero { max-width: 1180px; margin: auto; padding: 64px 30px 40px; }
+.brand, .eyebrow { font-size: 11px; letter-spacing: 2px; font-weight: 700; color: #65765e; }
+h1 { font-family: Georgia, serif; font-size: clamp(40px, 6vw, 66px); font-weight: 400; margin: 18px 0 12px; letter-spacing: -2px; }
+h1 span { color: #c77642; }
+.hero > p { color: #6b7369; font-size: 17px; line-height: 1.6; }
+main { max-width: 1180px; padding: 0 30px; margin: auto; display: grid; grid-template-columns: 370px minmax(0, 1fr); gap: 42px; align-items: start; }
+.panel { background: #fffefa; border: 1px solid #e2e4d9; border-radius: 18px; padding: 28px; box-shadow: 0 8px 30px #293e2910; }
+h2 { font-family: Georgia, serif; font-weight: 400; font-size: 29px; margin: 10px 0 24px; }
+label { display: block; font-size: 14px; font-weight: 600; margin: 20px 0 8px; }
+label span { color: #747d72; font-weight: 400; font-size: 12px; }
+input, textarea { width: 100%; font: inherit; font-size: 14px; color: #25372d; padding: 13px 14px; border: 1px solid #d5dacd; border-radius: 8px; background: #fff; line-height: 1.6; }
+textarea { resize: vertical; }
+input:focus, textarea:focus, button:focus-visible, summary:focus-visible { outline: 3px solid #9bc9a6; outline-offset: 3px; }
+button { width: 100%; background: #245b43; color: white; border: 0; border-radius: 8px; padding: 15px; font: inherit; font-weight: 600; cursor: pointer; margin-top: 20px; }
+button:hover { background: #194530; }
+.storage-note { font-size: 12px; line-height: 1.7; color: #747d72; margin-bottom: 0; }
+.collection { padding-top: 17px; }
+.collection-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.collection-heading h2 { margin-bottom: 18px; }
+.badge { padding: 8px 12px; background: #e7ecdf; border-radius: 30px; font-size: 12px; white-space: nowrap; }
+.search-label { margin-top: 6px; }
+#status { min-height: 20px; font-size: 14px; line-height: 1.5; color: #426a45; }
+.empty { border: 1px dashed #c8d0bf; border-radius: 16px; padding: 48px 28px; text-align: center; background: #f0f2e8; }
+.empty-icon { font-size: 40px; }
+.empty h3 { font-family: Georgia, serif; font-weight: 400; font-size: 25px; }
+.empty p { color: #6b7369; line-height: 1.7; }
+details { background: #fffefa; border: 1px solid #e0e3d7; border-radius: 12px; margin-bottom: 14px; overflow-wrap: anywhere; }
+summary { cursor: pointer; padding: 23px; font-family: "Segoe UI", sans-serif; font-size: 23px; font-weight: 600; }
+.recipe-content { padding: 0 24px 24px; border-top: 1px solid #eef0e7; }
+.recipe-content h3 { font-size: 14px; margin-top: 24px; }
+.recipe-content ul { padding-left: 22px; line-height: 1.8; }
+.instructions { white-space: pre-wrap; line-height: 1.8; }
+footer { max-width: 1180px; margin: 40px auto 0; padding: 24px 30px; color: #747d72; font-size: 12px; }
+@media (max-width: 800px) { main { grid-template-columns: 1fr; gap: 24px; } .hero { padding-top: 32px; } .collection { padding-top: 0; } }
+@media (max-width: 440px) { main, .hero, footer { padding-left: 18px; padding-right: 18px; } .panel { padding: 22px; } .collection-heading { flex-wrap: wrap; } }
