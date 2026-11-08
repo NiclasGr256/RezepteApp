@@ -36,6 +36,7 @@ h1 { font-family: Georgia, serif; font-size: clamp(40px, 6vw, 66px); font-weight
 h1 span { color: #c77642; }
 .hero > p { color: #6b7369; font-size: 17px; line-height: 1.6; }
 main { max-width: 1180px; padding: 0 30px; margin: auto; display: grid; grid-template-columns: 370px minmax(0, 1fr); gap: 42px; align-items: start; }
+.editor-column { display: grid; gap: 24px; }
 .panel { background: #fffefa; border: 1px solid #e2e4d9; border-radius: 18px; padding: 28px; box-shadow: 0 8px 30px #293e2910; }
 h2 { font-family: Georgia, serif; font-weight: 400; font-size: 29px; margin: 10px 0 24px; }
 label { display: block; font-size: 14px; font-weight: 600; margin: 20px 0 8px; }

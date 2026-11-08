@@ -2,7 +2,7 @@
 
 ## Starten
 
-Öffne den Ordner `D:\Projekte\RezepteApp` im Windows-Explorer und doppelklicke auf `index.html`. Die App öffnet sich in deinem Browser. Du brauchst dafür keine Installation.
+Öffne das [Rezeptbuch auf GitHub Pages](https://niclasgr256.github.io/RezepteApp/). Für die lokale Nutzung kannst du weiterhin `index.html` im Projektordner öffnen.
 
 1. Gib einen Rezeptnamen, die Zutaten und die Zubereitung ein.
 2. Klicke auf „Rezept speichern“.
@@ -15,7 +15,7 @@
 - Klappe ein Rezept auf und klicke auf „Bearbeiten“. Das Formular enthält dann deine bisherigen Angaben. Mit „Änderungen speichern“ aktualisierst du das Rezept; „Bearbeiten abbrechen“ lässt das gespeicherte Rezept unverändert.
 - Mit „Löschen“ entfernst du ein Rezept nach einer Sicherheitsabfrage dauerhaft.
 - Wähle im Formular unter „Rezeptfoto“ ein JPG-, PNG- oder WebP-Bild (maximal 15 MB). Auf unterstützten Handys bietet die Dateiauswahl auch die Kamera an. Eine Vorschau erscheint vor dem Speichern.
-- Fotos werden automatisch auf höchstens 1000 Pixel pro Seite verkleinert und zusammen mit dem Rezept im Browser gespeichert. Du kannst sie beim Bearbeiten ersetzen oder entfernen. Bereits vorhandene Rezepte ohne Foto funktionieren weiterhin.
+- Fotos werden automatisch auf höchstens 1000 Pixel pro Seite verkleinert und zusammen mit dem Rezept gespeichert. Du kannst sie beim Bearbeiten ersetzen oder entfernen. Bereits vorhandene Rezepte ohne Foto funktionieren weiterhin.
 - Der Browser bietet nur begrenzten Speicherplatz. Wenn er voll ist, zeigt die App eine Fehlermeldung und behält deine Eingaben. Entferne dann gegebenenfalls das ausgewählte Foto und speichere erneut.
 
 ## Labels und Filter
@@ -49,11 +49,19 @@ Die Umrechnung verändert nur die Anzeige, nicht das gespeicherte Original. Bei 
 - `style.css`: das Aussehen – Farben, Abstände und die Ansicht auf dem Handy.
 - `app.js`: das Verhalten – Speichern, Anzeigen und Suchen.
 - `portions.js`: das Erkennen und Umrechnen von Zutatenmengen.
+- `cloud.js`: Supabase-Verbindung und Datenbankzugriffe.
+- `supabase-schema.sql`: Tabelle und Zugriffsregeln für Rezepte.
 
 Zum Lernen kannst du `index.html` im Editor öffnen und „Mein Rezeptbuch“ durch einen eigenen Namen ersetzen. Speichere die Datei und lade die Seite im Browser neu.
 
 ## Wo liegen meine Rezepte?
 
-Die App speichert deine Eingaben mit `localStorage` im aktuellen Browser. Es gibt noch kein Benutzerkonto und keine Synchronisierung zwischen Geräten. Beim Löschen der Browserdaten können die Rezepte verloren gehen. Bei direkt geöffneten HTML-Dateien hängt das Speicherverhalten vom Browser ab. Verwende zunächst denselben Browser und verschiebe die Dateien nicht. Teste das Wiederöffnen zuerst mit einem Proberezept.
+Melde dich auf der veröffentlichten Seite über einen E-Mail-Link an. Verwende dazu die E-Mail-Adresse deines Supabase-Teams. Angemeldet speichert die App deine Rezepte und Fotos in Supabase. Wenn du die Seite auf einem anderen Gerät mit demselben Konto öffnest, lädt sie dieselben Rezepte. Die Datenbank erlaubt jedem Konto ausschließlich Zugriff auf seine eigenen Rezepte.
 
-Die App funktioniert ohne Internetverbindung. Für eine spätere Online-Veröffentlichung oder einen lokalen Webserver sind zusätzliche Schritte nötig.
+Ohne Anmeldung speichert die App weiterhin lokal im aktuellen Browser. Beim Löschen der Browserdaten können lokale Rezepte verloren gehen.
+
+## Lokale Rezepte übernehmen
+
+- Wenn du deine Rezepte bereits auf der GitHub-Pages-Adresse gespeichert hast, melde dich dort im gleichen Browser an und wähle „Rezepte aus diesem Browser ins Konto kopieren“.
+- Wenn du die App bisher als lokale `index.html` geöffnet hast, öffne die aktualisierte Datei am bisherigen Speicherort im gleichen Browser und wähle „Lokale Rezepte als Datei exportieren“. Melde dich danach auf GitHub Pages an und wähle die Datei bei „Exportdatei ins Konto kopieren“ aus.
+- Der Import kopiert die Rezepte einschließlich Fotos. Bei einer Wiederholung werden bereits kopierte Rezepte anhand des ursprünglichen Inhalts erkannt.

@@ -7,6 +7,8 @@
   <title>Mein Rezeptbuch</title>
   <link rel="stylesheet" href="style.css">
   <script src="portions.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0" defer></script>
+  <script src="cloud.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -16,35 +18,55 @@
     <p>Gute Ideen sammeln. Lieblingsgerichte wiederfinden.</p>
   </header>
   <main>
-    <section class="panel" aria-labelledby="form-title">
-      <p class="eyebrow">ETWAS GUTES FESTHALTEN</p>
-      <h2 id="form-title">Neues Rezept</h2>
-      <form id="recipe-form">
-        <label for="title">Name des Rezepts</label>
-        <input id="title" name="title" placeholder="Zum Beispiel: Omas Apfelkuchen" required maxlength="150">
-        <label for="servings">Ursprüngliche Portionen</label>
-        <input id="servings" name="servings" type="number" min="1" max="1000" step="1" value="2" required aria-describedby="servings-hint">
-        <p id="servings-hint" class="storage-note">Für wie viele Portionen gelten die folgenden Zutatenmengen?</p>
-        <label for="ingredients">Zutaten <span>eine pro Zeile, Menge zuerst</span></label>
-        <textarea id="ingredients" name="ingredients" rows="6" placeholder="200 g Mehl&#10;2 Eier&#10;100 ml Milch" required maxlength="10000"></textarea>
-        <p class="storage-note">Zum Beispiel: 200 g Mehl, 1,5 EL Öl oder ½ TL Salz. Jede Zutat kommt in eine eigene Zeile.</p>
-        <label for="instructions">Zubereitung</label>
-        <textarea id="instructions" name="instructions" rows="6" placeholder="So wird dein Lieblingsgericht gemacht …" required maxlength="20000"></textarea>
-        <fieldset class="labels-fieldset">
-          <legend>Labels <span>optional, mehrere möglich</span></legend>
-          <div id="recipe-labels"></div>
-        </fieldset>
-        <label for="photo">Rezeptfoto <span>optional</span></label>
-        <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="photo-hint">
-        <p id="photo-hint" class="storage-note">JPG, PNG oder WebP, maximal 15 MB. Große Fotos werden automatisch verkleinert. Am Handy kannst du je nach Browser auch ein Foto aufnehmen.</p>
-        <img id="photo-preview" class="recipe-photo" alt="Vorschau deines Rezeptfotos" hidden>
-        <button id="remove-photo" class="secondary" type="button" hidden>Foto entfernen</button>
-        <p id="form-status" role="status" aria-live="polite"></p>
-        <button id="save-recipe" type="submit">+ Rezept speichern</button>
-        <button id="cancel-edit" class="secondary" type="button" hidden>Bearbeiten abbrechen</button>
-      </form>
-      <p class="storage-note">Deine Rezepte bleiben in diesem Browser gespeichert. Auf anderen Geräten sind sie noch nicht verfügbar. Beim Löschen der Browserdaten gehen sie verloren.</p>
-    </section>
+    <div class="editor-column">
+      <section class="panel" aria-labelledby="account-title">
+        <p class="eyebrow">AUF DEINEN GERÄTEN</p>
+        <h2 id="account-title">Dein Konto</h2>
+        <form id="login-form" hidden>
+          <label for="account-email">E-Mail-Adresse</label>
+          <input id="account-email" name="email" type="email" autocomplete="email" required>
+          <button type="submit">Anmeldelink senden</button>
+        </form>
+        <p id="account-status" class="storage-note" role="status"></p>
+        <button id="retry-cloud" class="secondary" type="button" hidden>Rezepte erneut laden</button>
+        <button id="import-local" class="secondary" type="button" hidden>Rezepte aus diesem Browser ins Konto kopieren</button>
+        <button id="export-local" class="secondary" type="button" hidden>Lokale Rezepte als Datei exportieren</button>
+        <div id="import-file-panel" hidden>
+          <label for="import-file">Exportdatei ins Konto kopieren</label>
+          <input id="import-file" type="file" accept=".json,application/json">
+        </div>
+        <button id="logout" class="secondary" type="button" hidden>Abmelden</button>
+      </section>
+      <section class="panel" aria-labelledby="form-title">
+        <p class="eyebrow">ETWAS GUTES FESTHALTEN</p>
+        <h2 id="form-title">Neues Rezept</h2>
+        <form id="recipe-form">
+          <label for="title">Name des Rezepts</label>
+          <input id="title" name="title" placeholder="Zum Beispiel: Omas Apfelkuchen" required maxlength="150">
+          <label for="servings">Ursprüngliche Portionen</label>
+          <input id="servings" name="servings" type="number" min="1" max="1000" step="1" value="2" required aria-describedby="servings-hint">
+          <p id="servings-hint" class="storage-note">Für wie viele Portionen gelten die folgenden Zutatenmengen?</p>
+          <label for="ingredients">Zutaten <span>eine pro Zeile, Menge zuerst</span></label>
+          <textarea id="ingredients" name="ingredients" rows="6" placeholder="200 g Mehl&#10;2 Eier&#10;100 ml Milch" required maxlength="10000"></textarea>
+          <p class="storage-note">Zum Beispiel: 200 g Mehl, 1,5 EL Öl oder ½ TL Salz. Jede Zutat kommt in eine eigene Zeile.</p>
+          <label for="instructions">Zubereitung</label>
+          <textarea id="instructions" name="instructions" rows="6" placeholder="So wird dein Lieblingsgericht gemacht …" required maxlength="20000"></textarea>
+          <fieldset class="labels-fieldset">
+            <legend>Labels <span>optional, mehrere möglich</span></legend>
+            <div id="recipe-labels"></div>
+          </fieldset>
+          <label for="photo">Rezeptfoto <span>optional</span></label>
+          <input id="photo" name="photo" type="file" accept="image/jpeg,image/png,image/webp" aria-describedby="photo-hint">
+          <p id="photo-hint" class="storage-note">JPG, PNG oder WebP, maximal 15 MB. Große Fotos werden automatisch verkleinert. Am Handy kannst du je nach Browser auch ein Foto aufnehmen.</p>
+          <img id="photo-preview" class="recipe-photo" alt="Vorschau deines Rezeptfotos" hidden>
+          <button id="remove-photo" class="secondary" type="button" hidden>Foto entfernen</button>
+          <p id="form-status" role="status" aria-live="polite"></p>
+          <button id="save-recipe" type="submit">+ Rezept speichern</button>
+          <button id="cancel-edit" class="secondary" type="button" hidden>Bearbeiten abbrechen</button>
+        </form>
+        <p id="storage-note" class="storage-note">Ohne Anmeldung bleiben deine Rezepte in diesem Browser. Melde dich an, um sie auf mehreren Geräten zu verwenden.</p>
+      </section>
+    </div>
     <section class="collection" aria-labelledby="collection-title">
       <div class="collection-heading"><div><p class="eyebrow">GESAMMELT MIT LIEBE</p><h2 id="collection-title">Deine Rezepte</h2></div><span id="count" class="badge">0 Rezepte</span></div>
       <label class="search-label" for="search">Rezept suchen</label>
