@@ -21,21 +21,15 @@
     <div class="editor-column">
       <section class="panel" aria-labelledby="account-title">
         <p class="eyebrow">AUF DEINEN GERÄTEN</p>
-        <h2 id="account-title">Dein Konto</h2>
-        <form id="login-form" hidden>
-          <label for="account-email">E-Mail-Adresse</label>
-          <input id="account-email" name="email" type="email" autocomplete="email" required>
-          <button type="submit">Anmeldelink senden</button>
-        </form>
+        <h2 id="account-title">Gemeinsames Rezeptbuch</h2>
         <p id="account-status" class="storage-note" role="status"></p>
         <button id="retry-cloud" class="secondary" type="button" hidden>Rezepte erneut laden</button>
-        <button id="import-local" class="secondary" type="button" hidden>Rezepte aus diesem Browser ins Konto kopieren</button>
+        <button id="import-local" class="secondary" type="button" hidden>Rezepte aus diesem Browser übernehmen</button>
         <button id="export-local" class="secondary" type="button" hidden>Lokale Rezepte als Datei exportieren</button>
         <div id="import-file-panel" hidden>
-          <label for="import-file">Exportdatei ins Konto kopieren</label>
+          <label for="import-file">Rezepte aus einer Exportdatei übernehmen</label>
           <input id="import-file" type="file" accept=".json,application/json">
         </div>
-        <button id="logout" class="secondary" type="button" hidden>Abmelden</button>
       </section>
       <section class="panel" aria-labelledby="form-title">
         <p class="eyebrow">ETWAS GUTES FESTHALTEN</p>
@@ -64,7 +58,7 @@
           <button id="save-recipe" type="submit">+ Rezept speichern</button>
           <button id="cancel-edit" class="secondary" type="button" hidden>Bearbeiten abbrechen</button>
         </form>
-        <p id="storage-note" class="storage-note">Ohne Anmeldung bleiben deine Rezepte in diesem Browser. Melde dich an, um sie auf mehreren Geräten zu verwenden.</p>
+        <p id="storage-note" class="storage-note"></p>
       </section>
     </div>
     <section class="collection" aria-labelledby="collection-title">

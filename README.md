@@ -56,12 +56,12 @@ Zum Lernen kannst du `index.html` im Editor öffnen und „Mein Rezeptbuch“ du
 
 ## Wo liegen meine Rezepte?
 
-Melde dich auf der veröffentlichten Seite über einen E-Mail-Link an. Verwende dazu die E-Mail-Adresse deines Supabase-Teams. Angemeldet speichert die App deine Rezepte und Fotos in Supabase. Wenn du die Seite auf einem anderen Gerät mit demselben Konto öffnest, lädt sie dieselben Rezepte. Die Datenbank erlaubt jedem Konto ausschließlich Zugriff auf seine eigenen Rezepte.
+Öffne auf jedem Gerät dieselbe GitHub-Pages-Adresse. Rezepte und Fotos werden in einem gemeinsamen Supabase-Rezeptbuch gespeichert. Die geöffnete App lädt Änderungen auf anderen Geräten ungefähr alle 15 Sekunden nach.
 
-Ohne Anmeldung speichert die App weiterhin lokal im aktuellen Browser. Beim Löschen der Browserdaten können lokale Rezepte verloren gehen.
+Das veröffentlichte Rezeptbuch ist öffentlich. Jeder Besucher kann Rezepte lesen, hinzufügen, bearbeiten und löschen. Beim direkten Öffnen der lokalen HTML-Datei speichert die App im aktuellen Browser.
 
 ## Lokale Rezepte übernehmen
 
-- Wenn du deine Rezepte bereits auf der GitHub-Pages-Adresse gespeichert hast, melde dich dort im gleichen Browser an und wähle „Rezepte aus diesem Browser ins Konto kopieren“.
-- Wenn du die App bisher als lokale `index.html` geöffnet hast, öffne die aktualisierte Datei am bisherigen Speicherort im gleichen Browser und wähle „Lokale Rezepte als Datei exportieren“. Melde dich danach auf GitHub Pages an und wähle die Datei bei „Exportdatei ins Konto kopieren“ aus.
+- Wenn du deine Rezepte bereits auf der GitHub-Pages-Adresse gespeichert hast, öffne sie im gleichen Browser und wähle „Rezepte aus diesem Browser übernehmen“.
+- Wenn du die App bisher als lokale `index.html` geöffnet hast, öffne die aktualisierte Datei am bisherigen Speicherort im gleichen Browser und wähle „Lokale Rezepte als Datei exportieren“. Wähle die Datei auf GitHub Pages bei „Rezepte aus einer Exportdatei übernehmen“ aus.
 - Der Import kopiert die Rezepte einschließlich Fotos. Bei einer Wiederholung werden bereits kopierte Rezepte anhand des ursprünglichen Inhalts erkannt.

@@ -29,3 +29,16 @@ create policy own_recipes on public.recipes
   for all to authenticated
   using ((select auth.uid()) = user_id)
   with check ((select auth.uid()) = user_id);
+
+create table public.shared_recipes (like public.recipes including defaults including constraints);
+alter table public.shared_recipes drop column user_id;
+alter table public.shared_recipes add primary key (id);
+create index shared_recipes_recent_idx on public.shared_recipes (created_at desc, id desc);
+
+alter table public.shared_recipes enable row level security;
+revoke all on table public.shared_recipes from public, anon, authenticated;
+grant select, insert, update, delete on table public.shared_recipes to anon;
+
+-- This collection is intentionally editable by every visitor.
+create policy public_recipe_book on public.shared_recipes
+  for all to anon using (true) with check (true);

@@ -9,10 +9,11 @@ let storageReady = true;
 let editingRecipe = null;
 let currentPhoto = '';
 let photoVersion = 0;
-let activeUser = null;
-let accountVersion = 0;
+const sharedMode = location.protocol === 'https:';
 let cloudReady = false;
 let cloudBusy = false;
+let cloudLoading = false;
+let cloudRevision = 0;
 let newRecipeId = null;
 const photoInput = document.querySelector('#photo');
 const preview = document.querySelector('#photo-preview');
@@ -31,14 +32,11 @@ const selectedFilters = new Set();
 const labelInputs = new Map();
 const filterInputs = new Map();
 const resetFilters = document.querySelector('#reset-filters');
-const loginForm = document.querySelector('#login-form');
-const loginButton = loginForm.querySelector('button');
 const accountStatus = document.querySelector('#account-status');
 const retryCloud = document.querySelector('#retry-cloud');
 const importLocal = document.querySelector('#import-local');
 const exportLocal = document.querySelector('#export-local');
 const importFile = document.querySelector('#import-file');
-const logout = document.querySelector('#logout');
 const storageNote = document.querySelector('#storage-note');
 
 // Ältere Rezepte ohne Labels bleiben ganz normal nutzbar.
@@ -208,7 +206,7 @@ function element(tag, text, className) {
 }
 
 function renderRecipes() {
-  exportLocal.hidden = Boolean(activeUser) || recipes.length === 0;
+  exportLocal.hidden = sharedMode || recipes.length === 0;
   const query = search.value.trim().toLocaleLowerCase('de');
   const hasFilters = Boolean(query || selectedFilters.size);
   const filtered = recipes.filter(recipe => recipe.title.toLocaleLowerCase('de').includes(query) &&
@@ -216,6 +214,7 @@ function renderRecipes() {
   resetFilters.hidden = !hasFilters;
   document.querySelector('#filter-results').textContent = `${filtered.length} von ${recipes.length} Rezepten angezeigt`;
   document.querySelector('#count').textContent = `${recipes.length} ${recipes.length === 1 ? 'Rezept' : 'Rezepte'}`;
+  const openCards = new Set(Array.from(recipeList.querySelectorAll('details[open]'), card => card.dataset.recipeId));
   recipeList.replaceChildren();
   if (filtered.length === 0) {
     const empty = element('div', undefined, 'empty');
@@ -228,6 +227,10 @@ function renderRecipes() {
   }
   for (const [recipeIndex, recipe] of filtered.entries()) {
     const card = element('details');
+    if (recipe.id) {
+      card.dataset.recipeId = recipe.id;
+      card.open = openCards.has(recipe.id);
+    }
     const content = element('div', undefined, 'recipe-content');
     if (typeof recipe.photo === 'string' && /^data:image\/(jpeg|png|webp);base64,/.test(recipe.photo)) {
       const photo = element('img', undefined, 'recipe-photo');
@@ -307,12 +310,12 @@ function renderRecipes() {
     remove.type = 'button';
     remove.addEventListener('click', async () => {
       if (!window.confirm(`„${recipe.title}“ wirklich löschen? Das kann nicht rückgängig gemacht werden.`)) return;
-      if (activeUser) {
-        if (!await cloudWrite(userId => deleteCloudRecipe(userId, recipe.id), status,
+      if (sharedMode) {
+        if (!await cloudWrite(() => deleteCloudRecipe(recipe.id), status,
           'Das Rezept konnte nicht gelöscht werden. Bitte versuche es erneut.')) return;
         recipes = recipes.filter(item => item !== recipe);
       } else if (!persist(recipes.filter(item => item !== recipe))) return;
-      if (editingRecipe === recipe) resetEditor();
+      if (editingRecipe === recipe || (recipe.id && editingRecipe?.id === recipe.id)) resetEditor();
       renderRecipes();
       status.textContent = `„${recipe.title}“ wurde gelöscht.`;
       search.focus();
@@ -335,7 +338,7 @@ function renderRecipes() {
 form.addEventListener('submit', async event => {
   event.preventDefault();
   if (saveButton.disabled) return;
-  if (!activeUser && !storageReady) {
+  if (!sharedMode && !storageReady) {
     status.textContent = 'Speichern ist momentan nicht möglich, damit vorhandene Daten erhalten bleiben.';
     return;
   }
@@ -356,10 +359,10 @@ form.addEventListener('submit', async event => {
     formStatus.textContent = 'Bitte fülle alle drei Felder aus. Leerzeichen allein reichen nicht.';
     return;
   }
-  if (activeUser) {
+  if (sharedMode) {
     recipe.id = editingRecipe?.id ?? (newRecipeId ??= crypto.randomUUID());
     const isEdit = Boolean(editingRecipe);
-    if (!await cloudWrite(userId => saveCloudRecipe(userId, recipe, isEdit), formStatus,
+    if (!await cloudWrite(() => saveCloudRecipe(recipe, isEdit), formStatus,
       'Das Rezept konnte nicht gespeichert werden. Deine Eingaben bleiben erhalten.')) return;
     recipes = isEdit ? recipes.map(item => item.id === recipe.id ? recipe : item) : [recipe, ...recipes];
   } else {
@@ -374,91 +377,64 @@ form.addEventListener('submit', async event => {
 });
 
 search.addEventListener('input', renderRecipes);
-showLocalRecipes();
+if (!sharedMode) showLocalRecipes();
 renderRecipes();
 
 function updateAccountControls() {
-  form.inert = cloudBusy || Boolean(activeUser && !cloudReady);
+  form.inert = sharedMode && (cloudBusy || !cloudReady);
   recipeList.inert = form.inert;
-  logout.disabled = cloudBusy;
   importLocal.disabled = cloudBusy;
   importFile.disabled = cloudBusy;
   importFile.parentElement.hidden = !cloudReady;
-  retryCloud.disabled = cloudBusy;
+  retryCloud.disabled = cloudBusy || cloudLoading;
 }
 
 async function cloudWrite(action, message, failure) {
-  if (!activeUser || cloudBusy || !cloudReady) return false;
-  const version = accountVersion;
+  if (cloudBusy || !cloudReady) return false;
+  cloudRevision++;
   cloudBusy = true;
   updateAccountControls();
   try {
-    await action(activeUser.id);
-    return version === accountVersion;
+    await action();
+    return true;
   } catch {
-    if (version === accountVersion) message.textContent = failure;
+    message.textContent = failure;
     return false;
   } finally {
-    if (version === accountVersion) {
-      cloudBusy = false;
-      updateAccountControls();
-    }
+    cloudBusy = false;
+    updateAccountControls();
   }
 }
 
-async function refreshCloudRecipes() {
-  if (!activeUser || cloudBusy) return;
-  const version = accountVersion;
-  cloudBusy = true;
-  retryCloud.hidden = true;
+async function refreshCloudRecipes(showProgress = false) {
+  if (cloudBusy || cloudLoading) return;
+  const revision = cloudRevision;
+  cloudLoading = true;
   updateAccountControls();
-  accountStatus.textContent = 'Rezepte werden geladen …';
+  if (showProgress) accountStatus.textContent = 'Rezepte werden geladen …';
   try {
-    const loaded = await loadCloudRecipes(activeUser.id);
-    if (version !== accountVersion) return;
-    recipes = loaded;
-    cloudReady = true;
-    importLocal.hidden = readLocalRecipes().length === 0;
-    accountStatus.textContent = `Angemeldet als ${activeUser.email}.`;
-    renderRecipes();
-  } catch {
-    if (version !== accountVersion) return;
-    retryCloud.hidden = false;
-    accountStatus.textContent = 'Deine Konto-Rezepte konnten nicht geladen werden. Bitte versuche es erneut.';
-  } finally {
-    if (version === accountVersion) {
-      cloudBusy = false;
-      updateAccountControls();
+    const loaded = await loadCloudRecipes();
+    if (revision !== cloudRevision) return;
+    if (JSON.stringify(loaded) !== JSON.stringify(recipes)) {
+      recipes = loaded;
+      renderRecipes();
     }
+    if (!cloudReady || showProgress) importLocal.hidden = readLocalRecipes().length === 0;
+    cloudReady = true;
+    retryCloud.hidden = true;
+    if (showProgress || accountStatus.dataset.connectionError) {
+      accountStatus.textContent = 'Dieses Rezeptbuch ist öffentlich. Alle Besucher können Rezepte lesen, ändern und löschen.';
+      delete accountStatus.dataset.connectionError;
+    }
+  } catch {
+    if (revision !== cloudRevision) return;
+    retryCloud.hidden = false;
+    accountStatus.dataset.connectionError = 'true';
+    accountStatus.textContent = 'Das gemeinsame Rezeptbuch konnte nicht geladen werden. Bitte versuche es erneut.';
+  } finally {
+    cloudLoading = false;
+    updateAccountControls();
   }
-}
-
-function switchAccount(session) {
-  const user = session?.user ?? null;
-  loginForm.hidden = Boolean(user);
-  logout.hidden = !user;
-  if (activeUser?.id === user?.id) return;
-  activeUser = user;
-  accountVersion++;
-  cloudBusy = false;
-  cloudReady = false;
-  importLocal.hidden = true;
-  retryCloud.hidden = true;
-  resetEditor();
-  clearFilters();
-  status.textContent = '';
-  recipes = [];
-  storageNote.textContent = user ? 'Deine Rezepte werden in deinem Konto gespeichert.'
-    : 'Ohne Anmeldung bleiben deine Rezepte in diesem Browser. Melde dich an, um sie auf mehreren Geräten zu verwenden.';
-  if (user) {
-    loginForm.reset();
-    setTimeout(refreshCloudRecipes, 0);
-  } else {
-    accountStatus.textContent = 'Du bist abgemeldet.';
-    showLocalRecipes();
-  }
-  updateAccountControls();
-  renderRecipes();
 }
 
 exportLocal.addEventListener('click', () => {
@@ -485,63 +461,39 @@ async function importRecipes(recipesToCopy) {
     return;
   }
   accountStatus.textContent = 'Lokale Rezepte werden kopiert …';
-  if (await cloudWrite(userId => copyCloudRecipes(userId, local), accountStatus,
+  if (await cloudWrite(() => copyCloudRecipes(local), accountStatus,
     'Der Import wurde unterbrochen. Du kannst ihn erneut starten. Bereits kopierte Rezepte werden nicht dupliziert.')) {
-    await refreshCloudRecipes();
+    await refreshCloudRecipes(true);
   }
 }
 
 if (cloud) {
-  const authError = new URLSearchParams(location.hash.slice(1)).get('error_code');
-  if (authError) accountStatus.textContent = 'Der Anmeldelink ist ungültig oder abgelaufen. Fordere einen neuen an.';
-  cloud.auth.onAuthStateChange((_event, session) => switchAccount(session));
-
-  loginForm.addEventListener('submit', async event => {
-    event.preventDefault();
-    loginButton.disabled = true;
-    accountStatus.textContent = 'Anmeldelink wird gesendet …';
-    try {
-      const { error } = await cloud.auth.signInWithOtp({ email: loginForm.elements.email.value.trim() });
-      if (error) throw error;
-      accountStatus.textContent = 'Öffne den Anmeldelink in deinem E-Mail-Postfach.';
-    } catch (error) {
-      accountStatus.textContent = error.code === 'email_address_not_authorized'
-        ? 'Mit dem aktuellen E-Mail-Versand sind nur Adressen aus deinem Supabase-Team zugelassen.'
-        : 'Der Anmeldelink konnte nicht gesendet werden. Prüfe die Adresse und versuche es später erneut.';
-    } finally {
-      loginButton.disabled = false;
-    }
-  });
-
-  logout.addEventListener('click', async () => {
-    logout.disabled = true;
-    try {
-      const { error } = await cloud.auth.signOut({ scope: 'local' });
-      if (error) throw error;
-    } catch {
-      accountStatus.textContent = 'Abmelden fehlgeschlagen. Bitte versuche es erneut.';
-    } finally {
-      updateAccountControls();
-    }
-  });
-  retryCloud.addEventListener('click', refreshCloudRecipes);
+  storageNote.textContent = 'Änderungen werden für alle Geräte im gemeinsamen Rezeptbuch gespeichert.';
+  retryCloud.addEventListener('click', () => refreshCloudRecipes(true));
   importLocal.addEventListener('click', () => importRecipes(readLocalRecipes()));
   importFile.addEventListener('change', async () => {
     const file = importFile.files[0];
     importFile.value = '';
     if (!file) return;
-    const version = accountVersion;
     try {
       if (file.size > 12 * 1024 * 1024) throw new Error('Datei zu groß');
       const saved = JSON.parse(await file.text());
       if (!isRecipeList(saved)) throw new Error('Ungültige Rezeptdaten');
-      if (version === accountVersion) await importRecipes(saved);
+      await importRecipes(saved);
     } catch {
-      if (version === accountVersion) accountStatus.textContent = 'Bitte wähle eine gültige Rezeptbuch-Exportdatei bis 12 MB.';
+      accountStatus.textContent = 'Bitte wähle eine gültige Rezeptbuch-Exportdatei bis 12 MB.';
     }
   });
+  refreshCloudRecipes(true);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) refreshCloudRecipes();
+  });
+  setInterval(() => {
+    if (!document.hidden) refreshCloudRecipes();
+  }, 15000);
 } else {
-  accountStatus.textContent = location.protocol === 'file:'
-    ? 'Der Konto-Login ist in der veröffentlichten App verfügbar.'
-    : 'Der Konto-Login ist gerade nicht verfügbar. Du kannst Rezepte lokal speichern.';
+  accountStatus.textContent = sharedMode
+    ? 'Die Datenbankverbindung ist gerade nicht verfügbar. Bitte lade die Seite neu.'
+    : 'In der lokal geöffneten App bleiben deine Rezepte in diesem Browser.';
+  updateAccountControls();
 }
