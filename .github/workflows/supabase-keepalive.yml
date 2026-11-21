@@ -1,0 +1,23 @@
+name: Supabase Keepalive
+
+on:
+  schedule:
+    - cron: '17 5,13,21 * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  check-database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      # Public client key for the same Data API used by the recipe app.
+      SUPABASE_PUBLIC_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY || 'sb_publishable_W681rZjSREDHEFZUm6ieRg_RuKV2EJy' }}
+    steps:
+      - name: Read from Supabase
+        run: |
+          curl --head --fail --silent --show-error --output /dev/null \
+            --connect-timeout 10 --max-time 20 --retry 2 \
+            --header "apikey: $SUPABASE_PUBLIC_KEY" \
+            'https://toqdzgxitihqxywwyoqd.supabase.co/rest/v1/shared_recipes?select=id&limit=1'
