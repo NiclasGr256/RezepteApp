@@ -4,8 +4,8 @@
 
 ### iPhone und iPad
 
-- Beim Öffnen siehst du sofort deine Rezeptliste. „+ Neues Rezept“ öffnet das Formular; „Schließen“ bewahrt den Entwurf bis zum Neuladen der Seite. Ein neues Rezept beginnt nach Rückfrage mit einem leeren Formular.
-- Im Burger-Menü oben rechts findest du Verbindungsinfos und die vorhandenen Import-/Exportfunktionen.
+- Die Gestaltung folgt dem Kalorien-Tracker: hellgrauer Hintergrund, weiße Karten und pinke Akzente. Beim Öffnen siehst du sofort deine Rezeptliste. Das runde Plus unten rechts öffnet das Formular; „Schließen“ bewahrt den Entwurf bis zum Neuladen der Seite. Ein neues Rezept beginnt nach Rückfrage mit einem leeren Formular.
+- Das Burger-Menü oben links öffnet eine Seitenleiste mit „Meine Rezepte“, „Neues Rezept“ und „Synchronisierung & Import“. Im letzten Bereich findest du Verbindungsinfos und die vorhandenen Import-/Exportfunktionen.
 - Die Label-Filter sind platzsparend aufklappbar. Aktive Filter werden gezählt und lassen sich auch bei zugeklapptem Filterbereich zurücksetzen.
 - Öffne ein Rezept und tippe auf „Kochen starten“. Auf dem iPad stehen Zutaten und Zubereitung nebeneinander; auf dem iPhone untereinander. Die Portionsumrechnung funktioniert auch in dieser Ansicht.
 - Zutaten lassen sich für die aktuelle Kochrunde abhaken. Die Häkchen werden nicht dauerhaft gespeichert oder auf andere Geräte übertragen; beim Neuladen der Liste können sie zurückgesetzt werden.

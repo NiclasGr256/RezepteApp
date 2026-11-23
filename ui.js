@@ -3,6 +3,7 @@ const menuDialog = document.querySelector('#menu-dialog');
 const editorDialog = document.querySelector('#editor-dialog');
 const cookingDialog = document.querySelector('#cooking-dialog');
 const menuToggle = document.querySelector('#menu-toggle');
+const accountDialog = document.querySelector('#account-dialog');
 let restoreCookingContent = null;
 
 function openRecipeEditor() {
@@ -40,11 +41,21 @@ function openCookingView(title, content, trigger) {
 
 document.querySelector('#new-recipe').addEventListener('click', startNewRecipe);
 document.querySelector('#menu-new-recipe').addEventListener('click', startNewRecipe);
+document.querySelector('#show-account').addEventListener('click', () => {
+  menuDialog.close();
+  accountDialog.showModal();
+});
 menuToggle.addEventListener('click', () => {
   menuDialog.showModal();
   menuToggle.setAttribute('aria-expanded', 'true');
 });
 menuDialog.addEventListener('close', () => menuToggle.setAttribute('aria-expanded', 'false'));
+menuDialog.addEventListener('click', event => {
+  if (event.target !== menuDialog) return;
+  const bounds = menuDialog.getBoundingClientRect();
+  if (event.clientX < bounds.left || event.clientX > bounds.right ||
+      event.clientY < bounds.top || event.clientY > bounds.bottom) menuDialog.close();
+});
 document.querySelector('#show-recipes').addEventListener('click', () => {
   menuDialog.close();
   search.focus();

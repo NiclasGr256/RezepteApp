@@ -148,3 +148,69 @@ main { display: block; max-width: 1180px; }
   .recipe-actions button { min-width: 100px; font-size: 0.9375rem; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+/* Gleiche mobile Gestaltung wie im Kalorien-Tracker. */
+:root { --bg: #f8fafc; --surface: #fff; --accent: #ec4899; --text: #111827; --muted: #6c6c7e; font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif; background: var(--bg); color: var(--text); }
+html { -webkit-text-size-adjust: 100%; }
+body { color: var(--text); background: var(--bg); padding-bottom: calc(92px + env(safe-area-inset-bottom)); }
+.app-bar { max-width: 960px; margin: 0 auto; display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; gap: 8px; border: 0; padding: calc(12px + env(safe-area-inset-top)) 16px 12px; background: var(--bg); }
+.app-brand { justify-content: center; font-size: 1.25rem; color: var(--text); font-weight: 600; }
+.header-mascot { justify-self: center; }
+.app-bar .menu-toggle { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; min-width: 44px; min-height: 44px; padding: 0; border-radius: 12px; background: var(--surface); color: var(--text); }
+.burger, .burger::before, .burger::after { display: block; width: 18px; height: 2px; background: var(--text); border-radius: 1px; position: relative; }
+.burger::before, .burger::after { content: ''; position: absolute; left: 0; }
+.burger::before { top: -6px; }
+.burger::after { top: 6px; }
+main { max-width: 960px; padding: 16px; }
+.collection-heading { margin-bottom: 20px; }
+.collection-heading h2 { color: var(--text); font-family: inherit; font-size: 1.5rem; font-weight: 650; margin: 0 0 6px; }
+.collection-subtitle { margin: 0; color: var(--muted); font-size: 0.9375rem; }
+.badge { background: #fce7f3; color: #9d174d; font-size: 0.8125rem; }
+button { border-radius: 12px; background: var(--accent); }
+button:hover { background: #db2777; }
+button.secondary { background: #eef0f4; color: var(--text); }
+button.secondary:hover { background: #e3e6ed; }
+input, textarea { border-color: #e2e5eb; border-radius: 12px; color: var(--text); }
+input:focus, textarea:focus, button:focus-visible, summary:focus-visible { outline-color: #f9a8d4; }
+.fab { position: fixed; z-index: 6; bottom: calc(24px + env(safe-area-inset-bottom)); right: max(24px, calc((100vw - 960px) / 2 + 24px)); width: 60px; height: 60px; min-height: 60px; margin: 0; padding: 0; border-radius: 50%; color: #fff; font-size: 2rem; font-weight: 300; line-height: 1; box-shadow: 0 4px 20px #ec489940; }
+.fab:active { transform: scale(0.95); }
+details { background: var(--surface); border: 1px solid #e8ebf0; border-radius: 16px; box-shadow: 0 2px 8px #11182704; }
+summary { font-family: inherit; font-size: 1.125rem; }
+.recipe-label-badge { background: #fce7f3; color: #9d174d; }
+.recipe-photo, .portions-control { background: #f1f3f7; }
+.recipe-content { border-color: #eef0f4; }
+.ingredient-choice { border-color: #eef0f4; }
+.ingredient-choice span, .label-choice span { color: var(--text); }
+.ingredient-choice input, .label-choice input { accent-color: var(--accent); }
+.label-choice { border-color: #e2e5eb; background: var(--surface); }
+.label-choice:has(input:checked) { background: #fce7f3; border-color: #f9a8d4; }
+.storage-note, .label-group legend, .drawer-note, footer { color: var(--muted); }
+.panel { background: var(--surface); border-color: #e8ebf0; box-shadow: none; }
+.panel h2, .empty h3, .sheet-heading h2 { font-family: inherit; }
+.sheet { background: var(--bg); color: var(--text); border-color: #e8ebf0; }
+.sheet::backdrop { background: #0008; }
+.sheet-heading > span, .eyebrow { color: var(--muted); }
+.cooking-sheet .sheet-heading { background: var(--bg); }
+.empty { background: var(--surface); border-color: #e2e5eb; }
+.empty p, .empty-icon { color: var(--muted); }
+#status { color: #9d174d; }
+.menu-sheet { position: fixed; inset: 0 auto 0 0; width: min(280px, 85vw); max-width: 280px; height: 100dvh; max-height: 100dvh; margin: 0; padding: calc(16px + env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom)); border: 0; border-radius: 0; background: var(--surface); }
+.menu-sheet[open] { display: flex; flex-direction: column; animation: drawer-enter 180ms ease-out; }
+.menu-sheet .sheet-heading { margin-bottom: 12px; align-items: center; }
+.menu-sheet #menu-title { font-size: 0.8125rem; color: var(--muted); letter-spacing: 0.08em; font-weight: 500; padding-left: 12px; }
+.menu-sheet .drawer-close { width: 44px; height: 44px; padding: 0; background: transparent; font-size: 1.5rem; }
+.menu-links { gap: 4px; }
+.menu-links .nav-item { width: 100%; padding: 14px 12px; text-align: left; background: transparent; color: var(--text); border-radius: 10px; font-weight: 400; }
+.menu-links .nav-item:hover { background: #f1f3f7; }
+.menu-links .nav-item.active { background: #fce7f3; color: #be185d; font-weight: 600; }
+.drawer-note { margin-top: auto; padding: 16px 12px 0; font-size: 0.875rem; line-height: 1.6; }
+footer { max-width: 960px; padding: 24px 16px; }
+@keyframes drawer-enter { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+@media (max-width: 600px) {
+  .app-brand { font-size: 1.125rem; }
+  .collection-heading h2 { font-size: 1.375rem; }
+  .collection-subtitle { font-size: 0.875rem; }
+  .collection-heading { gap: 8px; }
+  .sheet .panel { padding: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { .menu-sheet[open] { animation: none; } }
