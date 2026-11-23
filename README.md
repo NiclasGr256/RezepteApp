@@ -2,6 +2,15 @@
 
 ## Starten
 
+### iPhone und iPad
+
+- Beim Öffnen siehst du sofort deine Rezeptliste. „+ Neues Rezept“ öffnet das Formular; „Schließen“ bewahrt den Entwurf bis zum Neuladen der Seite. Ein neues Rezept beginnt nach Rückfrage mit einem leeren Formular.
+- Im Burger-Menü oben rechts findest du Verbindungsinfos und die vorhandenen Import-/Exportfunktionen.
+- Die Label-Filter sind platzsparend aufklappbar. Aktive Filter werden gezählt und lassen sich auch bei zugeklapptem Filterbereich zurücksetzen.
+- Öffne ein Rezept und tippe auf „Kochen starten“. Auf dem iPad stehen Zutaten und Zubereitung nebeneinander; auf dem iPhone untereinander. Die Portionsumrechnung funktioniert auch in dieser Ansicht.
+- Zutaten lassen sich für die aktuelle Kochrunde abhaken. Die Häkchen werden nicht dauerhaft gespeichert oder auf andere Geräte übertragen; beim Neuladen der Liste können sie zurückgesetzt werden.
+- Die Ansicht berücksichtigt Bildschirmränder und verwendet größere Touchflächen sowie mindestens 16 px große Eingabeschrift.
+
 Öffne das [Rezeptbuch auf GitHub Pages](https://niclasgr256.github.io/RezepteApp/). Für die lokale Nutzung kannst du weiterhin `index.html` im Projektordner öffnen.
 
 1. Gib einen Rezeptnamen, die Zutaten und die Zubereitung ein.

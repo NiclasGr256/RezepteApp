@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#245b43">
   <title>Mein Rezeptbuch</title>
   <link rel="icon" type="image/png" sizes="32x32" href="hamster-icon-32.png">
@@ -12,15 +12,28 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0" defer></script>
   <script src="cloud.js" defer></script>
   <script src="app.js" defer></script>
+  <script src="ui.js" defer></script>
 </head>
 <body>
+  <nav class="app-bar" aria-label="Hauptnavigation">
+    <a class="app-brand" href="#collection-title"><img src="hamster-icon-32.png" alt="" width="32" height="32"> Mein Rezeptbuch</a>
+    <div class="bar-actions">
+      <button id="new-recipe" type="button">+ Neues Rezept</button>
+      <button id="menu-toggle" class="secondary menu-toggle" type="button" aria-label="Menü öffnen" aria-haspopup="dialog" aria-controls="menu-dialog" aria-expanded="false"><span aria-hidden="true">☰</span></button>
+    </div>
+  </nav>
   <header class="hero">
     <div class="brand">MEINE KÜCHE · MEINE LIEBLINGSREZEPTE</div>
     <h1>Mein Rezeptbuch<span>.</span></h1>
     <p>Gute Ideen sammeln. Lieblingsgerichte wiederfinden.</p>
   </header>
   <main>
-    <div class="editor-column">
+    <dialog id="menu-dialog" class="sheet menu-sheet" aria-labelledby="menu-title">
+      <div class="sheet-heading"><h2 id="menu-title">Dein Rezeptbuch</h2><button type="button" class="secondary" data-close-dialog aria-label="Menü schließen">Schließen</button></div>
+      <nav class="menu-links" aria-label="Menü">
+        <button id="show-recipes" class="secondary" type="button">Alle Rezepte</button>
+        <button id="menu-new-recipe" type="button">+ Neues Rezept</button>
+      </nav>
       <section class="panel" aria-labelledby="account-title">
         <p class="eyebrow">AUF DEINEN GERÄTEN</p>
         <h2 id="account-title">Gemeinsames Rezeptbuch</h2>
@@ -33,6 +46,9 @@
           <input id="import-file" type="file" accept=".json,application/json">
         </div>
       </section>
+    </dialog>
+    <dialog id="editor-dialog" class="sheet editor-sheet" aria-labelledby="form-title">
+      <div class="sheet-heading"><span>DEINE REZEPTSAMMLUNG</span><button type="button" class="secondary" data-close-dialog aria-label="Rezeptformular schließen">Schließen</button></div>
       <section class="panel" aria-labelledby="form-title">
         <p class="eyebrow">ETWAS GUTES FESTHALTEN</p>
         <h2 id="form-title">Neues Rezept</h2>
@@ -62,22 +78,31 @@
         </form>
         <p id="storage-note" class="storage-note"></p>
       </section>
-    </div>
+    </dialog>
     <section class="collection" aria-labelledby="collection-title">
       <div class="collection-heading"><div><p class="eyebrow">GESAMMELT MIT LIEBE</p><h2 id="collection-title">Deine Rezepte</h2></div><span id="count" class="badge">0 Rezepte</span></div>
       <label class="search-label" for="search">Rezept suchen</label>
       <input type="search" id="search" placeholder="Nach einem Rezeptnamen suchen …">
+      <details class="filter-disclosure">
+      <summary id="filter-summary">Filter auswählen</summary>
       <fieldset class="labels-fieldset filter-panel" aria-describedby="filter-hint">
         <legend>Nach Labels filtern</legend>
         <p id="filter-hint" class="storage-note">Es müssen alle ausgewählten Labels passen. Die Namenssuche gilt zusätzlich.</p>
         <div id="label-filters"></div>
         <button id="reset-filters" class="secondary" type="button" hidden>Suche und Filter zurücksetzen</button>
       </fieldset>
+      </details>
+      <button id="clear-active-filters" class="secondary" type="button" hidden>Suche und Filter zurücksetzen</button>
       <p id="filter-results" class="storage-note" role="status" aria-live="polite"></p>
       <p id="status" role="status" aria-live="polite"></p>
       <div id="recipes"></div>
     </section>
   </main>
+  <dialog id="cooking-dialog" class="sheet cooking-sheet" aria-labelledby="cooking-title">
+    <div class="sheet-heading"><div><p class="eyebrow">ZEIT ZUM KOCHEN</p><h2 id="cooking-title"></h2></div><button type="button" class="secondary" data-close-dialog>Kochansicht schließen</button></div>
+    <p class="storage-note">Zutaten kannst du für diese Kochrunde abhaken. Deine gespeicherten Rezepte werden dadurch nicht verändert.</p>
+    <div id="cooking-content"></div>
+  </dialog>
   <footer>Dein persönliches Rezeptbuch · Platz für alles, was dir schmeckt.</footer>
 </body>
 </html>

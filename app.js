@@ -212,6 +212,9 @@ function renderRecipes() {
   const filtered = recipes.filter(recipe => recipe.title.toLocaleLowerCase('de').includes(query) &&
     [...selectedFilters].every(label => getLabels(recipe).includes(label)));
   resetFilters.hidden = !hasFilters;
+  document.querySelector('#clear-active-filters').hidden = !hasFilters;
+  document.querySelector('#filter-summary').textContent = selectedFilters.size
+    ? `Filter (${selectedFilters.size} aktiv)` : 'Filter auswählen';
   document.querySelector('#filter-results').textContent = `${filtered.length} von ${recipes.length} Rezepten angezeigt`;
   document.querySelector('#count').textContent = `${recipes.length} ${recipes.length === 1 ? 'Rezept' : 'Rezepte'}`;
   const openCards = new Set(Array.from(recipeList.querySelectorAll('details[open]'), card => card.dataset.recipeId));
@@ -239,7 +242,8 @@ function renderRecipes() {
       photo.loading = 'lazy';
       content.append(photo);
     }
-    const ingredients = element('ul');
+    const ingredients = element('ul', undefined, 'ingredient-checklist');
+    const checkedIngredients = new Set();
     const originalServings = validServings(recipe.servings) ? recipe.servings : null;
     const portions = element('div', undefined, 'portions-control');
     const portionsLabel = element('label', 'Kochen für … Portionen');
@@ -266,10 +270,21 @@ function renderRecipes() {
       portionsInput.setAttribute('aria-invalid', String(Boolean(originalServings && !valid)));
       let unchanged = 0;
       ingredients.replaceChildren();
-      lines.forEach(line => {
+      lines.forEach((line, lineIndex) => {
         const result = valid ? scaleIngredient(line, originalServings, desired) : { text: line, scaled: false };
         if (!result.scaled) unchanged++;
-        ingredients.append(element('li', result.text));
+        const row = element('li');
+        const choice = element('label', undefined, 'ingredient-choice');
+        const check = element('input');
+        check.type = 'checkbox';
+        check.checked = checkedIngredients.has(lineIndex);
+        check.addEventListener('change', () => {
+          if (check.checked) checkedIngredients.add(lineIndex);
+          else checkedIngredients.delete(lineIndex);
+        });
+        choice.append(check, element('span', result.text));
+        row.append(choice);
+        ingredients.append(row);
       });
       calculationStatus.textContent = !originalServings ? 'Zutaten in Originalmengen.'
         : !valid ? 'Bitte gib eine ganze Portionszahl von 1 bis 1000 ein. Bis dahin werden die Originalmengen angezeigt.'
@@ -278,9 +293,14 @@ function renderRecipes() {
     portionsInput.addEventListener('input', updateIngredients);
     updateIngredients();
     portions.append(portionsLabel, portionsInput, portionsNote, calculationStatus);
-    content.append(portions, element('h3', 'Zutaten'), ingredients,
-      element('p', 'Es wird nur die Menge am Zeilenanfang umgerechnet. Angaben wie „Salz nach Geschmack“, Mengenbereiche und Zahlen in der Zubereitung bleiben unverändert. Bruchteile von Eiern oder Packungen bitte praktisch anpassen.', 'storage-note'),
-      element('h3', 'Zubereitung'), element('p', recipe.instructions, 'instructions'));
+    const cookingColumns = element('div', undefined, 'cooking-columns');
+    const ingredientSection = element('section', undefined, 'ingredient-section');
+    ingredientSection.append(portions, element('h3', 'Zutaten'), ingredients,
+      element('p', 'Nur Mengen am Zeilenanfang werden umgerechnet. Mengenbereiche und Zahlen in der Zubereitung bleiben unverändert. Bruchteile von Eiern oder Packungen bitte praktisch anpassen.', 'storage-note'));
+    const instructionSection = element('section', undefined, 'instruction-section');
+    instructionSection.append(element('h3', 'Zubereitung'), element('p', recipe.instructions, 'instructions'));
+    cookingColumns.append(ingredientSection, instructionSection);
+    content.append(cookingColumns);
     const actions = element('div', undefined, 'recipe-actions');
     const edit = element('button', 'Bearbeiten', 'secondary');
     edit.type = 'button';
@@ -303,6 +323,7 @@ function renderRecipes() {
       document.querySelector('#form-title').textContent = 'Rezept bearbeiten';
       saveButton.textContent = 'Änderungen speichern';
       cancelEdit.hidden = false;
+      openRecipeEditor();
       form.elements.title.focus();
       form.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
@@ -320,7 +341,10 @@ function renderRecipes() {
       status.textContent = `„${recipe.title}“ wurde gelöscht.`;
       search.focus();
     });
-    actions.append(edit, remove);
+    const cook = element('button', 'Kochen starten');
+    cook.type = 'button';
+    cook.addEventListener('click', () => openCookingView(recipe.title, content, cook));
+    actions.append(cook, edit, remove);
     content.append(actions);
     const summary = element('summary');
     summary.append(element('span', recipe.title));
@@ -373,7 +397,7 @@ form.addEventListener('submit', async event => {
   clearFilters();
   renderRecipes();
   status.textContent = `„${recipe.title}“ wurde gespeichert. Klicke auf den Rezeptnamen, um es zu öffnen.`;
-  form.elements.title.focus();
+  closeRecipeEditor();
 });
 
 search.addEventListener('input', renderRecipes);
